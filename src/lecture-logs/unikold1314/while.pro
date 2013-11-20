@@ -2,7 +2,7 @@
 
 /*
 
-// This is a Java program used as a starting point
+// A Java program used as a starting point
 
 import java.util.Scanner;
 

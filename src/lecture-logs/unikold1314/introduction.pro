@@ -47,7 +47,7 @@ wellTypedSample(
     )
 ).
 
-An ill-typed sample
+% An ill-typed sample
 illTypedSample(
   if(
      binary(const(0), const(0), eq),
