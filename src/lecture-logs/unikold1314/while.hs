@@ -40,25 +40,27 @@ write r;
 
 -}
 
--- The expression syntax needed for the example at hand
+-- The expression syntax
 -- We do not support read/write at this point.
 data Expr = IntConst Int
           | Var String
           | Binary Expr Expr Op
  deriving (Read, Show, Eq)
 
--- Binary operators needed
+-- Binary operators
 data Op = Greater | Mult | Sub
  deriving (Read, Show, Eq)
 
--- The statement syntax needed for the example at hand
-data Stm = IntDecl String
+-- The statement syntax
+data Stm = Skip
+         | IntDecl String
          | Assign String Expr
          | Seq Stm Stm
+         | If Expr Stm Stm
          | While Expr Stm
  deriving (Read, Show, Eq)
 
--- An "Ok" sample (in the sense of well-formedness; see below)
+-- An "Ok" sample
 okSample
   = Seq (IntDecl "n") (
     Seq (Assign "n" (IntConst 5)) (
@@ -71,7 +73,6 @@ okSample
         (Assign "n" (Binary (Var "n") (IntConst 1) Sub))
       )
     )))))
-
 
 -- States (mapping variable ids to values)
 type State = String -> Value
@@ -100,10 +101,24 @@ exec (Assign x e)
   = \s -> \x' -> if x==x'
                    then (eval e s)
                    else s x'
+exec Skip = id
 exec (Seq s1 s2) = exec s2 . exec s1
-exec (While e s) = fix f
-  where
-    f g = cond (eval e) (g . exec s) id
+exec (If e s1 s2)
+  = cond (eval e) (exec s1) (exec s2)
+exec (While e s)
+  = fix f
+    where
+      f g = cond (eval e) (g . exec s) id
+
+{-
+
+Here is a non-compositional semantics.
+
+exec (While e s)
+  = exec (If e (Seq s (While e s)) Skip)
+
+
+-}
 
 -- Helper
 cond a b c s = 
