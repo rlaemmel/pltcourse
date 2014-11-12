@@ -2,13 +2,18 @@
 
 (C) 2014, Ralf Laemmel
 
+
+Forq background on big-step operational semantics (or natural semantics) 
+and small-step operational semantics (or structured operational semantics), 
+please consider chapter 2 of http://www.daimi.au.dk/~bra8130/Wiley_book/wiley.pdf
+
 Let's define abstract syntax, (dynamic) semantics, and a type system
 for a tiny language. We are going to play with a stack-based language,
 somewhat inspired by Forth. Let's call it MiniForth. As to the
-semantics, we will be doing both big-step operational semantics
-(natural semantics) and small-step operational semantics (SOS). As to
-the type system, we will be using types to model the pre- and
-postconditions of programs with regard to stack size.
+semantics, we will be doing both big-step and small-step operational
+semantics (SOS). As to the type system, we will be using types to
+model the pre- and postconditions of programs with regard to stack
+size.
 
 A sample MiniForth program
 
