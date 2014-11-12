@@ -76,6 +76,7 @@ S = [4].
 smallstep(seq(skip, O), O, S, S).
 smallstep(seq(O1a, O2), seq(O1b, O2), S1, S2) :-
   smallstep(O1a, O1b, S1, S2).
+smallstep(push(I), skip, S, [I|S]).
 smallstep(pop, skip, [_|S], S).
 smallstep(dup, skip, [I|S], [I,I|S]).
 smallstep(add, skip, [I1,I2|S], [I3|S]) :- I3 is I1 + I2.
