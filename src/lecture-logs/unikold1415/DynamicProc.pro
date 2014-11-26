@@ -81,6 +81,8 @@ exec(while(E, S), C, M1, M2) :-
 exec(while(E, _), _, M, M) :-
     beval(E, M, ff).
 
+% BTW, we skip nondeterminism and parallelism here.
+
 % Semantics of procedure call
 exec(call(I), C, M1, M2) :-
     % Look up body of called method
