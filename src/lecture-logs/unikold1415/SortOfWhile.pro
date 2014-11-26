@@ -30,7 +30,9 @@ stm(abort).
 
 aexp(number(N)) :- number(N).
 aexp(var(I)) :- atom(I).
+aexp(add(E1, E2)) :- aexp(E1), aexp(E2).
 aexp(sub(E1, E2)) :- aexp(E1), aexp(E2).
+aexp(mul(E1, E2)) :- aexp(E1), aexp(E2).
 aexp(div(E1, E2)) :- aexp(E1), aexp(E2).
 
 
@@ -67,11 +69,19 @@ exec(par(S1, S2), M1, M2) :- exec(seq(S1, S2), M1, M2).
 exec(par(S1, S2), M1, M2) :- exec(seq(S2, S1), M1, M2).
 
 aeval(number(N), _, N).
-aeval(var(I), M, V) :- append(_, [(I, V)|_], M).
+aeval(var(I), M, V) :- lookup(M, I, V).
+aeval(add(E1, E2), M, V3) :-
+    aeval(E1, M, V1),
+    aeval(E2, M, V2),
+    V3 is V1 + V2.
 aeval(sub(E1, E2), M, V3) :-
     aeval(E1, M, V1),
     aeval(E2, M, V2),
     V3 is V1 - V2.
+aeval(mul(E1, E2), M, V3) :-
+    aeval(E1, M, V1),
+    aeval(E2, M, V2),
+    V3 is V1 * V2.
 aeval(div(E1, E2), M, V3) :-
     aeval(E1, M, V1),
     aeval(E2, M, V2),
@@ -85,12 +95,15 @@ beval(nonzero(E), M, V) :-
 	V = ff; V = tt.
 
 
-% Helper for store update
+% Helpers for finite functions as lists of pairs
 
-update(M1, I, V, M2) :-
-    append(M1a, [(I, _)|M1b], M1) ->
-	append(M1a, [(I, V)|M1b], M2);
-        M2 = [(I, V)|M1].
+lookup(L, X, Y) :-
+    append(_, [(X, Y)|_], L).
+
+update(L1, X, Y, L2) :-
+    append(L1a, [(X, _)|L1b], L1) ->
+	append(L1a, [(X, Y)|L1b], L2);
+        L2 = [(X, Y)|L1].
 
 
 /* 
@@ -103,7 +116,7 @@ X = [ (x, 88)].
 ?- exec(seq(assign(x,number(42)), while(nonzero(var(x)), assign(x, sub(var(x), number(1))))), [], X).
 X = [ (x, 0)].
 
-?- exec(par(assign(x, number(1)), seq(assign(x, number(2)), assign(x, sub(var(x), number(-2))))), [], X).
+?- exec(par(assign(x, number(1)), seq(assign(x, number(2)), assign(x, add(var(x), number(2))))), [], X).
 X = [ (x, 4)] ;
 X = [ (x, 1)] ;
 false.
@@ -178,7 +191,7 @@ X = [ (x, 88)].
 ?- many(seq(assign(x,number(42)), while(nonzero(var(x)), assign(x, sub(var(x), number(1))))), [], X).
 X = [ (x, 0)].
 
-?- many(par(assign(x, number(1)), seq(assign(x, number(2)), assign(x, sub(var(x), number(-2))))), [], X).
+?- many(par(assign(x, number(1)), seq(assign(x, number(2)), assign(x, add(var(x), number(2))))), [], X).
 X = [ (x, 4)] ;
 X = [ (x, 4)] ;
 X = [ (x, 4)] ;
