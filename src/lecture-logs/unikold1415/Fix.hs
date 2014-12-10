@@ -52,3 +52,16 @@ corresponding fix combinator happens to be a recursive function. In
 Haskell, thus, we need at least that single recursive function fix.
 
 -}
+
+{-
+
+Another example:
+
+*Main> fix (\f x -> if x==0 then True else not (f (x-1))) 0
+True
+*Main> fix (\f x -> if x==0 then True else not (f (x-1))) 1
+False
+*Main> fix (\f x -> if x==0 then True else not (f (x-1))) 2
+True
+
+-}
