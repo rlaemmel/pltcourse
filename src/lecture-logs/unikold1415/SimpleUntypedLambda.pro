@@ -1,6 +1,6 @@
 /*
 
-(C) 2014 Lambda calculus with eager reduction semantics
+(C) 2014 The simple untyped lambda calculus with eager reduction semantics
 
 */
 
@@ -17,19 +17,6 @@ expr(lambda(X, M)) :- atom(X), expr(M).
 % Normal form
 %
 normal(lambda(_, _)).
-
-
-%
-% Compute variables of a term
-%
-vars(var(X), [X]).
-vars(apply(M, N), V0) :-
-    vars(M, V1),
-    vars(N, V2),
-    union(V1, V2, V0).
-vars(lambda(X, M), V0) :-
-    fvars(M, V1),
-    union(V1, [X], V0).
 
 
 %
