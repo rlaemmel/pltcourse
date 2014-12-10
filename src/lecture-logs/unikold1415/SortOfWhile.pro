@@ -18,7 +18,7 @@ parallelism as covered below ("par" and "or").
 
 stm(skip).
 stm(seq(S1, S2)) :- stm(S1), stm(S2).
-stm(assign(I, E)) :- atom(I), aexp(E).
+stm(assign(X, E)) :- atom(X), aexp(E).
 stm(if(E, S1, S2)) :- bexp(E), stm(S1), stm(S2).
 stm(while(E, S)) :- bexp(E), stm(S).
 stm(or(S1, S2)) :- stm(S1), stm(S2).
@@ -28,12 +28,11 @@ stm(abort).
 
 % Arithmetic expressions
 
-aexp(number(N)) :- number(N).
-aexp(var(I)) :- atom(I).
+aexp(number(N)) :- integer(N).
+aexp(var(X)) :- atom(X).
 aexp(add(E1, E2)) :- aexp(E1), aexp(E2).
 aexp(sub(E1, E2)) :- aexp(E1), aexp(E2).
 aexp(mul(E1, E2)) :- aexp(E1), aexp(E2).
-aexp(div(E1, E2)) :- aexp(E1), aexp(E2).
 
 
 % Boolean expressions
@@ -49,9 +48,9 @@ exec(skip, M, M).
 exec(seq(S1, S2), M1, M3) :-
     exec(S1, M1, M2),
     exec(S2, M2, M3).
-exec(assign(I, E), M1, M2) :-
+exec(assign(X, E), M1, M2) :-
     aeval(E, M1, V),
-    update(M1, I, V, M2).
+    update(M1, X, V, M2).
 exec(if(E, S1, _), M1, M2) :-
     beval(E, M1, tt),
     exec(S1, M1, M2).
@@ -69,7 +68,7 @@ exec(par(S1, S2), M1, M2) :- exec(seq(S1, S2), M1, M2).
 exec(par(S1, S2), M1, M2) :- exec(seq(S2, S1), M1, M2).
 
 aeval(number(N), _, N).
-aeval(var(I), M, V) :- lookup(M, I, V).
+aeval(var(X), M, V) :- lookup(M, X, V).
 aeval(add(E1, E2), M, V3) :-
     aeval(E1, M, V1),
     aeval(E2, M, V2),
@@ -82,11 +81,6 @@ aeval(mul(E1, E2), M, V3) :-
     aeval(E1, M, V1),
     aeval(E2, M, V2),
     V3 is V1 * V2.
-aeval(div(E1, E2), M, V3) :-
-    aeval(E1, M, V1),
-    aeval(E2, M, V2),
-    \+ V2 == 0, 
-    V3 is V1 / V2.
 
 beval(true, _, tt).
 beval(false, _, ff).
@@ -110,15 +104,15 @@ update(L1, X, Y, L2) :-
 
 % Testing big-step semantics
 
-?- exec(seq(assign(x,number(42)), assign(x, number(88))), [], X).
-X = [ (x, 88)].
+?- exec(seq(assign(x,number(42)), assign(x, number(88))), [], S).
+S = [ (x, 88)].
 
-?- exec(seq(assign(x,number(42)), while(nonzero(var(x)), assign(x, sub(var(x), number(1))))), [], X).
-X = [ (x, 0)].
+?- exec(seq(assign(x,number(42)), while(nonzero(var(x)), assign(x, sub(var(x), number(1))))), [], S).
+S = [ (x, 0)].
 
-?- exec(par(assign(x, number(1)), seq(assign(x, number(2)), assign(x, add(var(x), number(2))))), [], X).
-X = [ (x, 4)] ;
-X = [ (x, 1)] ;
+?- exec(par(assign(x, number(1)), seq(assign(x, number(2)), assign(x, add(var(x), number(2))))), [], S).
+S = [ (x, 4)] ;
+S = [ (x, 1)] ;
 false.
 
 */
@@ -129,9 +123,9 @@ false.
 step(seq(skip, S), M, S, M).
 step(seq(S1, S2), M1, seq(S3, S2), M2) :-
     step(S1, M1, S3, M2).
-step(assign(I, E), M1, skip, M2) :-
+step(assign(X, E), M1, skip, M2) :-
     aeval(E, M1, V),
-    update(M1, I, V, M2).
+    update(M1, X, V, M2).
 step(if(E, S1, _), M, S1, M) :-
     beval(E, M, tt).
 step(if(E, _, S2), M, S2, M) :-
@@ -185,28 +179,28 @@ many(S, M, S, M) :-
 
 % Testing small-step semantics
 
-?- many(seq(assign(x,number(42)), assign(x, number(88))), [], X).
-X = [ (x, 88)].
+?- many(seq(assign(x,number(42)), assign(x, number(88))), [], S).
+S = [ (x, 88)].
 
-?- many(seq(assign(x,number(42)), while(nonzero(var(x)), assign(x, sub(var(x), number(1))))), [], X).
-X = [ (x, 0)].
+?- many(seq(assign(x,number(42)), while(nonzero(var(x)), assign(x, sub(var(x), number(1))))), [], S).
+S = [ (x, 0)].
 
-?- many(par(assign(x, number(1)), seq(assign(x, number(2)), assign(x, add(var(x), number(2))))), [], X).
-X = [ (x, 4)] ;
-X = [ (x, 4)] ;
-X = [ (x, 4)] ;
-X = [ (x, 4)] ;
-X = [ (x, 4)] ;
-X = [ (x, 3)] ;
-X = [ (x, 3)] ;
-X = [ (x, 3)] ;
-X = [ (x, 3)] ;
-X = [ (x, 3)] ;
-X = [ (x, 3)] ;
-X = [ (x, 3)] ;
-X = [ (x, 1)] ;
-X = [ (x, 1)] ;
-X = [ (x, 1)] ;
+?- many(par(assign(x, number(1)), seq(assign(x, number(2)), assign(x, add(var(x), number(2))))), [], S).
+S = [ (x, 4)] ;
+S = [ (x, 4)] ;
+S = [ (x, 4)] ;
+S = [ (x, 4)] ;
+S = [ (x, 4)] ;
+S = [ (x, 3)] ;
+S = [ (x, 3)] ;
+S = [ (x, 3)] ;
+S = [ (x, 3)] ;
+S = [ (x, 3)] ;
+S = [ (x, 3)] ;
+S = [ (x, 3)] ;
+S = [ (x, 1)] ;
+S = [ (x, 1)] ;
+S = [ (x, 1)] ;
 false.
 
 */

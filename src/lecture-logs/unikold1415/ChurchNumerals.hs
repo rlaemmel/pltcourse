@@ -1,7 +1,11 @@
 {-
+
         (C) 2014 Ralf Laemmel
+
         Illustration of Church numerals in Haskell's lambda calculus
+
 -}
+
 import Prelude hiding (succ)
 
 -- Constants 0, 1, 2, 3
