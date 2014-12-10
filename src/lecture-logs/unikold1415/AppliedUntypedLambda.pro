@@ -115,7 +115,7 @@ subst(X, N, if(M1, M2, M3), if(N1, N2, N3)) :-
 
 %
 % Call-by-value fixed point combinator as a lambda term
-% (λx. λy. (y (λz. x x y z))) (λx. λy. (y (λz. x x y z)))
+% (\x. \y. (y (\z. x x y z))) (\x. \y. (y (\z. x x y z)))
 % http://en.wikipedia.org/wiki/Fixed-point_combinator
 %
 fix(apply(T, T)) :-
