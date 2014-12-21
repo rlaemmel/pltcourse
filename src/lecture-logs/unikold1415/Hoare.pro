@@ -244,7 +244,7 @@ implies(E1, E2) :-
     normalize(E2, E4),
     implies_(E3, E4).
 
-% Rewrite rules for implication
+% Search rules for implication
 implies_(E, E).
 implies_(_, true).
 implies_(and(E1, E2), and(E3, E4)) :-
@@ -357,6 +357,7 @@ prove_div :-
     proof(
 
       % "As declared" precondition of the program
+      % x >= 0 && y > 0
       and(
         geq(var(x), number(0)), % As computed
         greater(var(y), number(0))), % Vacuously added for division by zero
@@ -424,6 +425,7 @@ prove_div :-
                   assign(q, add(var(q), number(1))))))))),
 
       % "As declared" postcondition of the program
+      % x == q*y + r && q >= 0 && r>0 && r < y
       and(
         eq(var(x), add(mul(var(q), var(y)), var(r))),
         and(
