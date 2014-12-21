@@ -39,6 +39,7 @@ aexp(mul(E1, E2)) :- aexp(E1), aexp(E2).
 
 bexp(true).
 bexp(false).
+bexp(geq(E1, E2)) :- aexp(E1), aexp(E2).
 bexp(nonzero(E)) :- aexp(E).
 
 
@@ -84,9 +85,12 @@ aeval(mul(E1, E2), M, V3) :-
 
 beval(true, _, tt).
 beval(false, _, ff).
+beval(geq(E1, E2), M, V0) :-
+    aeval(E1, M, V1),
+    aeval(E2, M, V2),
+    ( V1 >= V2 -> V0 = tt; V0 = ff ).
 beval(nonzero(E), M, V) :-
-    aeval(E, M, 0) ->
-	V = ff; V = tt.
+    aeval(E, M, 0) -> V = ff; V = tt.
 
 
 % Helpers for finite functions as lists of pairs
