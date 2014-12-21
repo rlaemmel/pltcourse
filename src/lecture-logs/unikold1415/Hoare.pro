@@ -331,15 +331,15 @@ while (r >= y) {
 % Euclidean division in SortOfWhile abstract syntax
 
 sample(
-	seq(
-		assign(q, number(0)),	  
-	        seq(
-			assign(r, var(x)),
-			while(
-			  geq(var(r), var(y)),
-			  seq(
-				  assign(r, sub(var(r), var(y))),
-				  assign(q, add(var(q), number(1)))))))
+  seq(
+    assign(q, number(0)),	  
+    seq(
+      assign(r, var(x)),
+      while(
+        geq(var(r), var(y)),
+        seq(
+          assign(r, sub(var(r), var(y))),
+          assign(q, add(var(q), number(1)))))))
 ).
 
 
@@ -359,7 +359,7 @@ prove_div :-
       % "As declared" precondition of the program
       and(
         geq(var(x), number(0)), % As computed
-	greater(var(y), number(0))), % Vacuously added for division by zero
+        greater(var(y), number(0))), % Vacuously added for division by zero
 
       % Strengthen precondition
       pre(
@@ -374,7 +374,7 @@ prove_div :-
           assign(q, number(0)),	  
 
           % Intermediate assertion
-	  and(
+          and(
             eq(var(x), add(mul(var(q), var(y)), var(x))),
             and(
               geq(var(q), number(0)),
@@ -426,11 +426,11 @@ prove_div :-
       % "As declared" postcondition of the program
       and(
         eq(var(x), add(mul(var(q), var(y)), var(r))),
-	and(
-	  geq(var(q), number(0)),
+        and(
+          geq(var(q), number(0)),
           and(
-	    geq(var(r), number(0)),
-	    not(geq(var(r), var(y))))))
+            geq(var(r), number(0)),
+            not(geq(var(r), var(y))))))
     ).
 
 
