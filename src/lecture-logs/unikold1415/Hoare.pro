@@ -4,7 +4,7 @@
 
 (C) 2014, Ralf Laemmel
 
-A simple proofchecker for axiomatic semantics (say, Hoare logic). 
+A simple proof checker for axiomatic semantics (say, Hoare logic). 
 
 See here for background:
 
@@ -245,7 +245,6 @@ implies(E1, E2) :-
     implies_(E3, E4).
 
 % Rewrite rules for implication
-
 implies_(E, E).
 implies_(_, true).
 implies_(and(E1, E2), and(E3, E4)) :-
@@ -291,7 +290,7 @@ prove_seq :-
 	    greater(var(x), number(2))
     ).
 
-% Proof for a simple if-statement
+% Proof for a simple if-statement that computes the max of a and b
 prove_if :-
     proof(
 	    true,
@@ -341,7 +340,6 @@ sample(
 			  seq(
 				  assign(r, sub(var(r), var(y))),
 				  assign(q, add(var(q), number(1)))))))
-
 ).
 
 
